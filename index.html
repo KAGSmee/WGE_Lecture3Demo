@@ -117,7 +117,8 @@
     var mousePos = {x:0, y:0};
     function mouseMove(e)
     {
-      mousePos = {x:e.clientX, y:e.clientY};
+      var rect  = canvas.getBoundingClientRect();
+      mousePos = {x:e.clientX - rect.x, y:e.clientY - rect.y};
     }
 
     //lerp vec 2
@@ -171,6 +172,12 @@
       smoothFollow.x = smoothFollow.x + (mousePos.x - smoothFollow.x) * followSpeed;
       smoothFollow.y = smoothFollow.y + (mousePos.y - smoothFollow.y) * followSpeed;
     }
+    /*
+    References:
+    Eiserloh, S., 2015. Math for Game Programmers: Fast and Funky 1D Nonlinear Transformations [[Web Page], [Talk]]. [viewed 17/01/2019]. Available from: https://www.youtube.com/watch?v=mr5xkf6zSzk 
+    Eiserloh, S., 2016. Math for Game Programmers: Juicing Your Cameras With Math [[Web Page], [Talk]]. [viewed 17/01/2019]. Available from: https://www.youtube.com/watch?v=tu-Qe66AvtY 
+    Brown, M., Secrets of Game Feel and Juice | Game Maker's Toolkit [[web page], [video essay]]. [viewed 18/01/2019]. Available from: https://www.youtube.com/watch?v=216_5nu4aVQ 
+    */
     </script>
   </body>
 </html>
