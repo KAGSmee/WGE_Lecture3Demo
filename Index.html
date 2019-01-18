@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <canvas id="gameViewport" width="1027" height="800"></canvas>
+    <script>
+    //global variables
+    var canvas;
+    var ctx;
+    var startTimeMS;
+    
+    var time = 0;
+    var followSpeed = 0.1;
+
+    var linear = {x:0, y:0};
+    var smoothStart = {x:0, y:0};
+    var smoothStop = {x:0, y:0};
+    var smoothStep = {x:0, y:0};
+    var smoothFollow = {x:0, y:0};
+
+    //set up the script
+    window.onload = function()
+    {
+      canvas = document.getElementById('gameViewport');
+      canvas.width = window.innerWidth-100;
+      canvas.height = window.innerHeight-100;
+      ctx = canvas.getContext('2d');
+
+      canvas.addEventListener("mousemove", mouseMove);
+
+      startTimeMS = Date.now();
+      loop();
+    }
+
+    //main game loop
+    function loop(){
+      var elapsed = (Date.now() - startTimeMS)/1000;
+      startTimeMS = Date.now();
+      
+      Update(elapsed);
+      Draw();
+      
+      requestAnimationFrame(loop); //replay the loop
+    }
+
+    //update everything here
+    function Update(elapsed)
+    {
+
+      Sfollow(elapsed);
+      console.log(smoothFollow);
+
+      time += elapsed;
+
+      if(time <= 1)
+      {
+        Linear();
+        Sstart();
+        Sstop();
+        Sstep();
+      }
+
+      //pause circles at the end after 1 second
+      if(time >= 1)
+      {
+        linear.x = 300;
+        smoothStart.x = 300;
+        smoothStop.x = 300;
+        smoothStep.x = 300;
+      }
+
+      //reset circles after 1.5 seconds
+      if(time >= 1.5)
+      {
+        time = 0;
+      }
+    }
+
+    //draw everything here
+    function Draw()
+    {
+      ctx.clearRect(0,0,canvas.width, canvas.height);
+
+      ctx.fillRect(10, 50, 320, 60);
+      ctx.fillRect(10, 130, 320, 60);
+      ctx.fillRect(10, 210, 320, 60);
+      ctx.fillRect(10, 290, 320, 60);
+
+      ctx.font = "20px Arial";
+      ctx.fillText("Linear interpolation", 340, 70);
+      ctx.fillText("Smooth Start", 340, 150);
+      ctx.fillText("Smooth Stop", 340, 230);
+      ctx.fillText("Smooth Step", 340, 310);
+
+      DrawCircle(linear, 30, 'red');
+      DrawCircle(smoothStart, 30, 'lightblue');
+      DrawCircle(smoothStop, 30, 'green');
+      DrawCircle(smoothStep, 30, 'orange');
+      DrawCircle(smoothFollow, 30, 'grey');
+    }
+    
+    //draw a circle with a position, radius and a style(colour)
+    function DrawCircle(pos, radius, style)
+    {
+      ctx.save();
+      ctx.fillStyle = style;
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, radius, 0, Math.PI*2, false);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    //get mouse position
+    var mousePos = {x:0, y:0};
+    function mouseMove(e)
+    {
+      mousePos = {x:e.clientX, y:e.clientY};
+    }
+
+    //lerp vec 2
+    function Lerp(a, b, t)
+    {
+      var vec2 = {x:0, y:0};
+      
+      vec2.x = a.x + (b.x - a.x) * t;
+      vec2.y = a.y +(b.y - a.y) * t;
+
+      return vec2;
+    }
+
+    //lerp float
+    function LerpNum(a, b, t)
+    {
+      return a + (b-a)*t;
+    }
+
+    //linear example=======================================================================================
+    function Linear()
+    {
+      linear = Lerp({x:40, y:80}, {x:300, y:80}, time)
+    }
+
+    //smooth Start example=================================================================================
+    function Sstart()
+    {
+      var t = time * time;
+      smoothStart = Lerp({x:40, y:160}, {x:300, y:160}, t);
+    }
+
+    //smooth stop example==================================================================================
+    function Sstop()
+    {
+      var t = 1 - ((1-time) * (1-time));
+      smoothStop = Lerp({x:40, y:240}, {x:300, y:240}, t);
+    }
+
+    //smooth stop example==================================================================================
+    function Sstep()
+    {
+      var t = LerpNum(time * time, 1 - ((1-time) * (1-time)), time);
+      smoothStep = Lerp({x:40, y:320}, {x:300, y:320}, t);
+    }
+
+    //smooth follow example================================================================================
+    function Sfollow(elapsed)
+    {
+      //should multiply by elapsed time to keep consistent across time 
+      smoothFollow.x = smoothFollow.x + (mousePos.x - smoothFollow.x) * followSpeed;
+      smoothFollow.y = smoothFollow.y + (mousePos.y - smoothFollow.y) * followSpeed;
+    }
+    </script>
+  </body>
+</html>
