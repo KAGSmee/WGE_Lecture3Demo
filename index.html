@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <body>
+    <h1>WGE Lecture 3 Lerp Demo</h1>
     <canvas id="gameViewport" width="1027" height="800"></canvas>
     <script>
     //global variables
@@ -22,7 +23,7 @@
     {
       canvas = document.getElementById('gameViewport');
       canvas.width = window.innerWidth-100;
-      canvas.height = window.innerHeight-100;
+      canvas.height = window.innerHeight-300;
       ctx = canvas.getContext('2d');
 
       canvas.addEventListener("mousemove", mouseMove);
@@ -78,7 +79,9 @@
     //draw everything here
     function Draw()
     {
-      ctx.clearRect(0,0,canvas.width, canvas.height);
+      ctx.fillStyle = '#e0e0e0';
+      ctx.fillRect(0,0,canvas.width, canvas.height);
+      ctx.fillStyle = 'black';
 
       ctx.fillRect(10, 50, 320, 60);
       ctx.fillRect(10, 130, 320, 60);
